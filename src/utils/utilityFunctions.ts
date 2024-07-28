@@ -23,6 +23,10 @@ export default class UtilityFunctions {
         return crypto.randomInt(100000, 999999).toString()
     }
 
+    static generateRandomNumbers: (min: number, max: number) => number = (min: number, max: number) => {
+        return crypto.randomInt(min, max)
+    }
+
     static sendEmailVarificationOTP: (user: IUser) => Promise<void> = async (user: IUser) => {
         // generate otp
         const otp = this.generateOtp()
@@ -119,4 +123,9 @@ export default class UtilityFunctions {
         await sendEmail(user.email, 'Reset Password Link', "", html)
     }
 
+    static createPassword = (name: string) => {
+        const sixDigit: number = this.generateRandomNumbers(100000, 999999)
+        const password: string = name.substring(0, 3) + sixDigit
+        return (password + sixDigit)
+    }
 }

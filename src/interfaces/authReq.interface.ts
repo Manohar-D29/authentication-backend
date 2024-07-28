@@ -1,5 +1,6 @@
 import { Request } from "express"
 import { IUser } from "../models/user.model"
+import { Schema } from "mongoose"
 
 export interface IRegisterReq {
     name: string,
@@ -9,13 +10,13 @@ export interface IRegisterReq {
 }
 
 export interface ILoginReq {
-    email: string,
+    email: string
     password: string
 }
 
 export interface IPayload {
-    _id: string,
-    email: string
+    _id: string | Schema.Types.ObjectId | undefined,
+    email: string | undefined
 }
 
 export interface IToken {
