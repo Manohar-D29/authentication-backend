@@ -35,11 +35,11 @@ export interface AuthenticatedRequest extends Request {
 }
 
 export interface IResetParams {
-    userId: string
+    id: string
     token: string
 }
 
 export interface IOtpReq {
-    userId: string,
+    email: string,
     otp: string
 }

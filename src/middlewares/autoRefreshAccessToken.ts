@@ -6,12 +6,12 @@ const accessTokenAutoRefresh = asyncHandler(async (req: Request, res: Response, 
 
     const accessToken = req.cookies.accessToken;
 
-    if (accessToken && !(UtilityFunctions.isTokenExpired(accessToken))) {
+    if (accessToken || !(UtilityFunctions.isTokenExpirednew(accessToken))) {
         //  Add the access token to the Authorization header
         req.headers['authorization'] = `Bearer ${accessToken}`
     }
 
-    if (!accessToken) {
+    if (!accessToken || UtilityFunctions.isTokenExpirednew(accessToken)) {
         // Attempt to get a new access token using the refresh token
         const oldRefreshToken = req.cookies.refreshToken;
         if (!oldRefreshToken) {

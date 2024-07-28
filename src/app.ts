@@ -9,18 +9,20 @@ import "./config/passportJwtStratergy"
 const app: Application = express();
 
 // middleware
+
+
+const options = {
+    origin: process.env.FRONTEND_URL,
+    credentials: true,
+    optionsSuccessStatus: 200,
+};
+
+app.use(cors(options));
+
 app.use(express.json());
 app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
 app.use(passport.initialize())
-
-const options = {
-    origin: '*',
-    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-    preflightContinue: false,
-    optionsSuccessStatus: 204
-};
-app.use(cors(options));
 
 //  routes
 app.use("/api/v1", router)

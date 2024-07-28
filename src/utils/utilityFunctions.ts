@@ -29,7 +29,7 @@ export default class UtilityFunctions {
         // save otp in db
         await new EmailVerificationModel({ userId: user._id, otp }).save()
         // create varification link
-        const link = `${process.env.FRONTEND_URL}/account/verify-Email`
+        const link = `${process.env.FRONTEND_URL}/account/verify-email`
         //generate & send email
         const html = `<p>Dear ${user.name},</p><p>Thank you for signing up with our website.
          To complete your registration, please verify your email address by entering the following one-time password (OTP): <a href="${link}">${link}</a> </p>
@@ -44,11 +44,15 @@ export default class UtilityFunctions {
 
         // generate access token
         const accessTokenExp = Math.floor(Date.now() / 1000) + 100; // Set expiration to 100 seconds from now
-        const accessToken: string = jwt.sign(payload, process.env.JWT_ACCESS_TOKEN_SECRET!, { expiresIn: String(accessTokenExp) })
+        const accessToken: string = jwt.sign({ ...payload, exp: accessTokenExp }, process.env.JWT_ACCESS_TOKEN_SECRET!,
+            // { expiresIn: "100s" }
+        )
         // generate refresh token
         const refreshTokenExp = Math.floor(Date.now() / 1000) + 60 * 60 * 24 * 5; // Set expiration to 5 days from now
 
-        const refreshToken: string = jwt.sign(payload, process.env.JWT_REFRESH_TOKEN_SECRET!, { expiresIn: String(refreshTokenExp) })
+        const refreshToken: string = jwt.sign({ ...payload, exp: refreshTokenExp }, process.env.JWT_REFRESH_TOKEN_SECRET!,
+            //  { expiresIn: "5d" }
+        )
 
         await Promise.all([UserRefreshTokenModel.deleteMany({ userId: user._id }), new UserRefreshTokenModel({ userId: user._id, token: refreshToken }).save()])
 
@@ -79,6 +83,13 @@ export default class UtilityFunctions {
             maxAge: refreshTokenmaxAge,
             // sameSite: 'strict', // Adjust according to your requirements
         });
+
+        res.cookie('is_authenticated', true, {
+            httpOnly: false,
+            secure: true, // Set to true if using HTTPS
+            maxAge: refreshTokenmaxAge,
+            // sameSite: 'strict', // Adjust according to your requirements         )
+        });
     }
 
     static isTokenExpired: (token: string) => boolean = (token: string) => {
@@ -87,9 +98,19 @@ export default class UtilityFunctions {
         return decoded ? false : true
     }
 
+    static isTokenExpirednew = (token: string) => {
+        if (!token) {
+            return true
+        }
+        const decodedToken: any = jwt.decode(token)
+        const currentTime = Date.now() / 1000
+        return decodedToken.exp < currentTime
+    }
+
     static sendResetLink: (user: IUser, token: string) => Promise<any> = async (user: IUser, token: string) => {
+        const id = user._id
         // create varification link
-        const link = `${process.env.FRONTEND_URL}/reset-password/${user._id}/${token}`
+        const link = `${process.env.FRONTEND_URL}/account/reset-password-confirm/${id}/${token}`
 
         //generate & send email
         const html = `<p>Dear ${user.name},</p><p>Here is your Reset Password Link : <a href="${link}"> <h4>Click Here</h4></a> </p>

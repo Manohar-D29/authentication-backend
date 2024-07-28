@@ -11,7 +11,7 @@ authRouter.route('/sign-in').post(AuthController.signInUser)
 authRouter.route('/verify-email').post(AuthController.verifyEmail)
 authRouter.route('/refresh-token').post(AuthController.refreshToken)
 authRouter.route('/reset-password-link').post(AuthController.passwordResetLink)
-authRouter.route('/reset-password/:userId/:token').post(AuthController.resetPassword)
+authRouter.route('/reset-password/:id/:token').post(AuthController.resetPassword)
 
 // protected routes
 authRouter.route("/me").get(accessTokenAutoRefresh, passport.authenticate('jwt', { session: false }), AuthController.getUser)
